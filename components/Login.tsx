@@ -54,7 +54,7 @@ const style = StyleSheet.create({
         padding: 15,
         backgroundColor: Colors.primary,
         borderRadius: 99,
-        marginTop: "25%"
+        marginTop: 50
     }
 });
 
