@@ -5,15 +5,15 @@ import { TravelOption } from '@/constants/TravelerType';
 
 interface props {
   item : TravelOption,
-  selectedTraveler: string
+  selectedItem: string
 }
 
-export default function OptionCard({ item , selectedTraveler}: props) {
+export default function OptionCard({ item , selectedItem}: props) {
   return (
-    <View style={[styles.container, selectedTraveler==item.title && {borderWidth:2}]}>
+    <View style={[styles.container, selectedItem==item.title && {borderWidth:2}]}>
       <View style={{ padding: 15 , width:"80%" }}>
         <Text style={STYLE_GLOBAL.titleText}>{item.title}</Text>
-        <Text style={STYLE_GLOBAL.subtitleText}>{item.desc}</Text>
+        <Text style={STYLE_GLOBAL.subtitleText}>{item.subtitle}</Text>
       </View>
       <Text style={{ padding:10 , fontSize: 30 }}>{item.icon}</Text>
     </View>
