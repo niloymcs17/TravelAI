@@ -1,3 +1,4 @@
+import { CreateTripContext } from "@/context/CreateTripContext";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 
@@ -8,15 +9,15 @@ export default function RootLayout() {
     'outfit-bold': require('./../assets/fonts/Outfit-Bold.ttf'),
   })
   return (
-    <Stack>
-      <Stack.Screen name="index"
-        options={{
-          headerShown: false
-        }} />
-      <Stack.Screen name="(tabs)"
-        options={{
-          headerShown: false
-        }} />
-    </Stack>
-  );
+      <Stack>
+        <Stack.Screen name="index"
+          options={{
+            headerShown: false
+          }} />
+        <Stack.Screen name="(tabs)"
+          options={{
+            headerShown: false
+          }} />
+      </Stack>
+      );
 }

@@ -5,7 +5,9 @@ import { Ionicons } from '@expo/vector-icons'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { FONT } from '@/constants/Font'
+import { useRouter } from 'expo-router'
 export default function MyTrip() {
+  const router = useRouter();
 
   const onStartNewTrip = () => {
 
@@ -21,7 +23,7 @@ export default function MyTrip() {
         <FontAwesome6 name="map-location" size={30} color="black" />
         <Text style={styles.title}>No trips planned yet</Text>
         <Text style={styles.subtitle}>Looks like it's time to plan a new travel experience! Get started below</Text>
-        <Pressable style={styles.button} onPress={onStartNewTrip}>
+        <Pressable style={styles.button} onPress={()=> router.push("/create-trip/search-place")}>
           <Text style={styles.buttonText}>Start a new trip</Text>
         </Pressable>
       </View>

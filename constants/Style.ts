@@ -3,6 +3,12 @@ import { FONT } from './Font';
 import { Colors } from './Colors';
 
 export const STYLE_GLOBAL = StyleSheet.create({ 
+    container: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%"
+    },
     button: {
         padding: 15,
         backgroundColor: Colors.primary,
@@ -18,5 +24,15 @@ export const STYLE_GLOBAL = StyleSheet.create({
     headerText:{
         fontSize:25,
         fontFamily:FONT.BOLD
+    },
+    titleText:{
+        fontSize:20,
+        fontFamily:FONT.BOLD,
+        color:"black"
+    },
+    subtitleText:{
+        fontSize:15,
+        fontFamily:FONT.REGULAR,
+        color:"grey"
     }
 });

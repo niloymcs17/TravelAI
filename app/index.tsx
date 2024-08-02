@@ -16,8 +16,7 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      {user ? <Redirect href={'/(tabs)myTrip'}></Redirect>  : <Login></Login>}
-      <Text>Edit app/index.tsx to edit this screen.</Text>
+      {user || true ? <Redirect href={'/myTrip'}></Redirect>  : <Login></Login>}
     </View>
   );
 }
