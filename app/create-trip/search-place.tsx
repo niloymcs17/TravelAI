@@ -8,16 +8,19 @@ import OptionCard from '@/components/OptionCard';
 import { FONT } from '@/constants/Font';
 import SelectDate from '@/components/select-date';
 import { useRouter } from 'expo-router';
+import { useDispatch } from 'react-redux';
+import { setDestinationAddress, setSelectedTraveler, setSelectedBudget, setStartDate, setEndDate } from '@/store/tripSlice';
 
 export default function SearchPlace() {
     const navigation = useNavigation();
     const router = useRouter();
-    const [destinationAddress, setDestinationAddress] = useState<any>();
-    const [selectedTraveler, setSelectedTraveler] = useState<any>();
-    const [selectedBudget, setSelectedBudget] = useState<any>();
+    const dispatch = useDispatch();
+    const [destinationAddress, setDestinationAddressState] = useState<any>();
+    const [selectedTraveler, setSelectedTravelerState] = useState<any>();
+    const [selectedBudget, setSelectedBudgetState] = useState<any>();
     const [formState, setFormState] = useState<any>(1); // Start with the initial state
-    const [startDate, setStartDate] = useState();
-    const [endDate, setEndDate] = useState();
+    const [startDate, setStartDateState] = useState<Date | null>(null);
+    const [endDate, setEndDateState] = useState<Date | null>(null);
 
     useEffect(() => {
         navigation.setOptions({
@@ -34,14 +37,21 @@ export default function SearchPlace() {
             alert('Please select a traveler.');
             return;
         } else if (formState === 3 && !(startDate && endDate)) {
-            alert('Please select a Dates .');
+            alert('Please select Dates.');
             return;
-        } else if (formState === 4 ) {
-            selectedBudget ? "": alert('Please select a Budget .');
-            router.push("/create-trip/review-trip")
+        } else if (formState === 4) {
+            if (!selectedBudget) {
+                alert('Please select a Budget.');
+                return;
+            }
+            dispatch(setDestinationAddress(destinationAddress));
+            dispatch(setSelectedTraveler(selectedTraveler));
+            dispatch(setSelectedBudget(selectedBudget));
+            dispatch(setStartDate(startDate?.toISOString() || ''));
+            dispatch(setEndDate(endDate?.toISOString() || ''));
+            router.push("/create-trip/review-trip");
             return;
         }
-        console.log(startDate + "-" + endDate)
         setFormState(formState + 1);
     };
 
@@ -51,11 +61,12 @@ export default function SearchPlace() {
         }
     };
 
-    const onNextDates = (date: any, type: any) => {
-        type === 'END_DATE' ? setEndDate(date) : setStartDate(date);
-        console.log('Date:', date);
-        console.log('type:', type);
-        // Handle the dates here, e.g., navigate to another screen or update formState
+    const onNextDates = (date: Date, type: string) => {
+        if (type === 'END_DATE') {
+            setEndDateState(date);
+        } else {
+            setStartDateState(date);
+        }
     };
 
     return (
@@ -73,7 +84,7 @@ export default function SearchPlace() {
                         }}
                         placeholder='Search'
                         onPress={(data, details = null) => {
-                            setDestinationAddress({
+                            setDestinationAddressState({
                                 name: data.description,
                                 coordinates: details?.geometry?.location,
                                 url: details?.url,
@@ -92,7 +103,7 @@ export default function SearchPlace() {
                     <FlatList
                         data={SelectTravelerList}
                         renderItem={({ item }) => (
-                            <Pressable onPress={() => setSelectedTraveler(item.title)}>
+                            <Pressable onPress={() => setSelectedTravelerState(item.title)}>
                                 <OptionCard item={item} selectedItem={selectedTraveler} />
                             </Pressable>
                         )}
@@ -103,14 +114,13 @@ export default function SearchPlace() {
             {formState === 3 && (
                 <SelectDate onNextDates={onNextDates} />
             )}
-
             {formState === 4 && (
                 <View style={{ flex: 1 }}>
-                    <Text style={[STYLE_GLOBAL.headerText]}>Budget</Text>
+                    <Text style={[STYLE_GLOBAL.headerText, { fontFamily: FONT.BOLD }]}>Budget</Text>
                     <FlatList
                         data={SelectBudgetList}
                         renderItem={({ item }) => (
-                            <Pressable onPress={() => setSelectedBudget(item.title)}>
+                            <Pressable onPress={() => setSelectedBudgetState(item.title)}>
                                 <OptionCard item={item} selectedItem={selectedBudget} />
                             </Pressable>
                         )}

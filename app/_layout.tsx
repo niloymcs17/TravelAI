@@ -1,6 +1,8 @@
 import { CreateTripContext } from "@/context/CreateTripContext";
+import store from "@/store/store";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
+import { Provider } from "react-redux";
 
 export default function RootLayout() {
   useFonts({
@@ -9,6 +11,7 @@ export default function RootLayout() {
     'outfit-bold': require('./../assets/fonts/Outfit-Bold.ttf'),
   })
   return (
+    <Provider store={store}>
       <Stack>
         <Stack.Screen name="index"
           options={{
@@ -19,5 +22,6 @@ export default function RootLayout() {
             headerShown: false
           }} />
       </Stack>
-      );
+    </Provider>
+  );
 }
