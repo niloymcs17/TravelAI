@@ -1,9 +1,8 @@
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, FlatList } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { STYLE_GLOBAL } from '@/constants/Style';
-import { useNavigation } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { FlatList } from 'react-native-gesture-handler';
 import { SelectTravelerList } from '@/constants/TravelerType';
 import OptionCard from '@/components/OptionCard';
 import { FONT } from '@/constants/Font';
@@ -13,7 +12,8 @@ export default function SearchPlace() {
     const navigation = useNavigation();
     const [destinationAddress, setDestinationAddress] = useState<any>();
     const [selectedTraveler, setSelectedTraveler] = useState<any>();
-    const [formState, setFormState] = useState<any>(3);
+    const [formState, setFormState] = useState<any>(1); // Start with the initial state
+    const [travelDates, setTravelDates] = useState({ startDate: null, endDate: null });
 
     useEffect(() => {
         navigation.setOptions({
@@ -36,38 +36,40 @@ export default function SearchPlace() {
         }
     }, [selectedTraveler]);
 
-    return (
-        <ScrollView style={styles.container}>
+    const onNextDates = (startDate: any, endDate: any) => {
+        setTravelDates({ startDate, endDate });
+        console.log('Start Date:', startDate);
+        console.log('End Date:', endDate);
+        // Handle the dates here, e.g., navigate to another screen or update formState
+    };
 
-            {formState === 1 && (
-                <>
-                    <Text style={[STYLE_GLOBAL.titleText, { fontFamily: FONT.MEDIUM }]}>Where are you travelling to?</Text>
-                    <GooglePlacesAutocomplete
-                        styles={{
-                            textInputContainer: {
-                                borderWidth: 2,
-                                borderRadius: 5,
-                                margin: 5
-                            },
-                        }}
-                        placeholder='Search'
-                        onPress={(data, details = null) => {
-                            // 'details' is provided when fetchDetails = true
-                            console.log(details);
-                            setDestinationAddress({
-                                name: data.description,
-                                coordinates: details?.geometry?.location,
-                                url: details?.url,
-                            });
-                        }}
-                        query={{
-                            key: "AIzaSyAJQsu6pd9FQovj0Hgd7JCp19WL0mq0BUY",
-                            language: 'en',
-                        }}
-                    />
-                </>
-            )}
-            {formState === 2 && (<View style={{ flex: 1 }}>
+    return (
+        <View style={styles.container}>
+            <View style={{flex:1}}>
+                <Text style={[STYLE_GLOBAL.headerText, { fontFamily: FONT.BOLD }]}>Where are you travelling to?</Text>
+                <GooglePlacesAutocomplete
+                    styles={{
+                        textInputContainer: {
+                            borderWidth: 2,
+                            borderRadius: 5,
+                            margin: 5
+                        },
+                    }}
+                    placeholder='Search'
+                    onPress={(data, details = null) => {
+                        setDestinationAddress({
+                            name: data.description,
+                            coordinates: details?.geometry?.location,
+                            url: details?.url,
+                        });
+                    }}
+                    query={{
+                        key: "AIzaSyAJQsu6pd9FQovj0Hgd7JCp19WL0mq0BUY",
+                        language: 'en',
+                    }}
+                />
+            </View>
+            <View style={{ flex: 1 }}>
                 <Text style={[STYLE_GLOBAL.headerText]}>Who is traveling</Text>
                 <FlatList
                     data={SelectTravelerList}
@@ -76,13 +78,10 @@ export default function SearchPlace() {
                             <OptionCard item={item} selectedTraveler={selectedTraveler} />
                         </Pressable>
                     )}
-                    keyExtractor={item => item.id.toString()}
                 />
-            </View>)}
-
-            <SelectDate />
-
-        </ScrollView>
+            </View>
+            <SelectDate onNextDates={onNextDates} />
+        </View>
     );
 }
 
