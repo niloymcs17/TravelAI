@@ -6,7 +6,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import { SelectBudgetList, SelectTravelerList } from '@/constants/TravelerType';
 import OptionCard from '@/components/OptionCard';
 import { FONT } from '@/constants/Font';
-import SelectDate from '@/components/select-date';
+import SelectDate from '@/components/SelectDate';
 import { useRouter } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { setDestinationAddress, setSelectedTraveler, setSelectedBudget, setStartDate, setEndDate } from '@/store/tripSlice';

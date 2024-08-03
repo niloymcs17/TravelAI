@@ -1,9 +1,21 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';  // Adjust the import path according to your project structure
 import { STYLE_GLOBAL } from '@/constants/Style';
 import { FONT } from '@/constants/Font';
+import Icon from 'react-native-vector-icons/MaterialIcons';  // Ensure you have vector icons installed
+import { useRouter } from 'expo-router';
+import { chatSession } from '@/configs/AiModal';
+import { collection, addDoc, setDoc, doc } from "firebase/firestore"; 
+import { auth, db } from '@/configs/FirebaseConfig';
+import { travel } from '@/constants/data';
+
+const AI_PROMPT = `Generate Travel Plan from {source} to {destination}.
+Travel date - {startDate} to  {endDate}. Traveler details - {travelWith} , total number of person {numberOfPerson} , with a {budget} budget .
+Create a Json that includes travel mode prefer flight , travel mode details ( flight Price with Booking url,cost, date time ) . Hotel options , with details - hotelName , address , price , rating , google map Plus Code , description .
+Create a day wise plan to visit place , best time to visit , ticket price ,with a Flight details, Flight Price with Booking url, Hotels options list with HotelName, Hotel address, Price,  google map Plus Code, rating, descriptions and Places to visit nearby with placeName, Place , place image url , place details , geo Coordinates .`
+
 
 const ReviewTrip = () => {
   const {
@@ -14,19 +26,74 @@ const ReviewTrip = () => {
     endDate,
   } = useSelector((state: RootState) => state.trip);
 
+  const router = useRouter();
+
+  const user = auth.currentUser;
+  const onStartNewTrip = async () => {
+    const FINAL_PROMPT = AI_PROMPT
+      .replace('{destination}', destinationAddress?.name)
+      .replace('{source}', "kolkata")
+      .replace('{startDate}', startDate)
+      .replace('{endDate}', endDate)
+      .replace('{travelWith}', selectedTraveler)
+      .replace('{numberOfPerson}', "4")
+      .replace('{budget}', selectedBudget)
+
+    const result = await chatSession.sendMessage(FINAL_PROMPT);
+    // console.log(result.response.text());
+    const docid= (Date.now()).toString();
+    try {
+      const docRef = await setDoc(doc(db, "users" ,docid), {
+        tripData:travel,
+        user:user?.email
+      });
+      console.log("Document written.... ");
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+    
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={[STYLE_GLOBAL.headerText, { fontFamily: FONT.BOLD }]}>Review Trip</Text>
-      <Text style={styles.label}>Destination:</Text>
-      <Text style={styles.value}>{destinationAddress?.name}</Text>
-      <Text style={styles.label}>Traveler:</Text>
-      <Text style={styles.value}>{selectedTraveler}</Text>
-      <Text style={styles.label}>Budget:</Text>
-      <Text style={styles.value}>{selectedBudget}</Text>
-      <Text style={styles.label}>Start Date:</Text>
-      <Text style={styles.value}>{startDate.substring(0,10)}</Text>
-      <Text style={styles.label}>End Date:</Text>
-      <Text style={styles.value}>{endDate.substring(0,10)}</Text>
+      <Text style={[STYLE_GLOBAL.headerText, styles.headerText]}>Review your trip</Text>
+      <Text style={styles.subHeader}>Before generating your trip, please review your selection</Text>
+
+      <View style={styles.row}>
+        <Icon name="location-pin" size={24} color="red" />
+        <View style={styles.column}>
+          <Text style={styles.label}>Destination</Text>
+          <Text style={styles.value}>{destinationAddress?.name}</Text>
+        </View>
+      </View>
+
+      <View style={styles.row}>
+        <Icon name="calendar-today" size={24} color="blue" />
+        <View style={styles.column}>
+          <Text style={styles.label}>Travel Date</Text>
+          <Text style={styles.value}>{`${startDate} To ${endDate}`}</Text>
+        </View>
+      </View>
+
+      <View style={styles.row}>
+        <Icon name="person" size={24} color="green" />
+        <View style={styles.column}>
+          <Text style={styles.label}>Who is Traveling</Text>
+          <Text style={styles.value}>{selectedTraveler}</Text>
+        </View>
+      </View>
+
+      <View style={styles.row}>
+        <Icon name="attach-money" size={24} color="gold" />
+        <View style={styles.column}>
+          <Text style={styles.label}>Budget</Text>
+          <Text style={styles.value}>{selectedBudget}</Text>
+        </View>
+      </View>
+
+      <TouchableOpacity onPress={onStartNewTrip} style={styles.button}>
+        <Text style={styles.buttonText}>Build My Trip</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -37,15 +104,45 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: 'white',
   },
+  headerText: {
+    fontFamily: FONT.BOLD,
+    fontSize: 24,
+    marginBottom: 10,
+  },
+  subHeader: {
+    fontSize: 16,
+    marginBottom: 20,
+    color: '#555',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  column: {
+    marginLeft: 10,
+  },
   label: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 10,
+    color: '#333',
   },
   value: {
     fontSize: 16,
     color: '#555',
     marginTop: 5,
+  },
+  button: {
+    marginTop: 30,
+    backgroundColor: 'black',
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 

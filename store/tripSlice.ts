@@ -22,10 +22,10 @@ const tripSlice = createSlice({
       state.selectedBudget = action.payload;
     },
     setStartDate: (state, action: PayloadAction<string>) => {
-      state.startDate = action.payload;
+      state.startDate = action.payload.substring(0, 10);
     },
     setEndDate: (state, action: PayloadAction<string>) => {
-      state.endDate = action.payload;
+      state.endDate = action.payload.substring(0, 10);
     },
     resetTrip: (state) => {
       initialState

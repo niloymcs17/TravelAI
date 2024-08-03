@@ -10,12 +10,12 @@ export default function TabLayout() {
     <Tabs screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName = "home";
-          if (route.name === SCREENS.DISCOVER) {
-            iconName = focused ? "home" : "home-outline";
+          if (route.name === SCREENS.SAVED_TRIP) {
+            iconName = focused ? "map" : "map-outline";
           } else if (route.name === SCREENS.PROFILE) {
             iconName = focused ? "person" : "person-outline";
           } else if (route.name === SCREENS.MY_TRIP) {
-            iconName = focused ? "cart" : "cart-outline";
+            iconName = focused ? "car" : "car-outline";
           }
   
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -25,7 +25,7 @@ export default function TabLayout() {
         headerShown:false
       })}>
         <Tabs.Screen name="myTrip" />
-        <Tabs.Screen name="discover" />
+        <Tabs.Screen name={SCREENS.SAVED_TRIP} />
         <Tabs.Screen name="profile" />
     </Tabs>
   )
