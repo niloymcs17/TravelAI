@@ -6,7 +6,7 @@
 
 export const Colors = {
   white:"#fff",
-  primary:"#11181C",
+  primary:"#674DEE",
   light: {
     text: '#11181C',
     background: '#fff',

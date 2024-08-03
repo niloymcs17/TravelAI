@@ -2,6 +2,7 @@ import React from 'react'
 import { Tabs } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons';
 import { SCREENS } from '@/constants/Screens';
+import { Colors } from '@/constants/Colors';
 
 export default function TabLayout() {
 
@@ -20,7 +21,7 @@ export default function TabLayout() {
   
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: "tomato",
+        tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: "gray",
         headerShown:false
       })}>

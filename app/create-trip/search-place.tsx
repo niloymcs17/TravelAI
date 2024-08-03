@@ -84,10 +84,11 @@ export default function SearchPlace() {
                         }}
                         placeholder='Search'
                         onPress={(data, details = null) => {
+                            console.warn(details)
                             setDestinationAddressState({
                                 name: data.description,
                                 coordinates: details?.geometry?.location,
-                                url: details?.url,
+                                placeID: details?.place_id,
                             });
                         }}
                         query={{

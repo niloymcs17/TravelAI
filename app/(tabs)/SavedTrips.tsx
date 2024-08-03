@@ -1,44 +1,51 @@
 // SavedTrips.tsx
 import HotelCard from '@/components/HotelCard';
+import LoadingOverlay from '@/components/LoadingOverlay';
+import PlacePhoto from '@/components/PlacePhoto';
 import { db } from '@/configs/FirebaseConfig';
 import { FONT } from '@/constants/Font';
-import { travel } from '@/constants/data';
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, Text } from 'react-native';
+import { View, ScrollView, StyleSheet,Image, Text } from 'react-native';
 import { Card, Title, Paragraph, Button } from 'react-native-paper';
 import Timeline from 'react-native-timeline-flatlist';
 
 
+
 const SavedTrips = () => {
 
-  const [userTrip, setUserTrips] = useState([travel.travelPlan]);
+  const [userTrip, setUserTrips] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     getTrips();
   }, [])
 
   const getTrips = async () => {
     setUserTrips([]);
-    const q = query(collection(db, "users"), where('user', '==', 'niloy@gmail.com'));
+    // const sanitizedEmail = user?.email?.replace(/[^a-zA-Z0-9]/g, '_'); // Sanitize email for Firestore document ID
+    const q = query(collection(db, "niloy_gmail_com")); // use dynamic email
     const queryShnap = await getDocs(q);
     queryShnap.forEach((doc) => {
-      const tripData = doc.data().tripData.travelPlan;
+      const tripData = doc.data().plan;
       console.log(doc.id, "=>", tripData);
 
       if (tripData){
         setUserTrips(prev => [...prev, tripData]);
       }
     });
+    setLoading(false);
   }
 
   return (
     <ScrollView style={styles.container}>
+      <LoadingOverlay visible={loading} text="Loading data..." />
 
-      {userTrip?.map((travelData, index) => (
+      {userTrip && userTrip?.map((travelData, index) => (
         <View key={index}>
+          <PlacePhoto photo={travelData.placeID} ></PlacePhoto>
           <Title style={styles.header}>Travel Plan</Title>
-
           <Card style={styles.card}>
             <Card.Title title="Flight Details" />
             <Card.Content>

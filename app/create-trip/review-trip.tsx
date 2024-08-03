@@ -7,7 +7,7 @@ import { FONT } from '@/constants/Font';
 import Icon from 'react-native-vector-icons/MaterialIcons';  // Ensure you have vector icons installed
 import { useRouter } from 'expo-router';
 import { chatSession } from '@/configs/AiModal';
-import { collection, addDoc, setDoc, doc } from "firebase/firestore"; 
+import { collection, addDoc, setDoc, doc } from "firebase/firestore";
 import { auth, db } from '@/configs/FirebaseConfig';
 import { travel } from '@/constants/data';
 
@@ -40,18 +40,24 @@ const ReviewTrip = () => {
       .replace('{budget}', selectedBudget)
 
     const result = await chatSession.sendMessage(FINAL_PROMPT);
-    // console.log(result.response.text());
-    const docid= (Date.now()).toString();
-    try {
-      const docRef = await setDoc(doc(db, "users" ,docid), {
-        tripData:travel,
-        user:user?.email
-      });
-      console.log("Document written.... ");
-    } catch (e) {
-      console.error("Error adding document: ", e);
+    console.log(result.response.text());
+    const sanitizedEmail = user?.email?.replace(/[^a-zA-Z0-9]/g, '_'); // Sanitize email for Firestore document ID
+    const tdata = JSON.parse(result.response.text());
+    if (sanitizedEmail && tdata) {
+      const docId = Date.now().toString();
+      try {
+        const docRef = doc(db, sanitizedEmail , docId);
+        await setDoc(docRef, {
+          plan:tdata.travelPlan,
+          destination:destinationAddress?.name,
+          travelerType:selectedTraveler
+        });
+        console.log("Document written....");
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
     }
-    
+
   };
 
   return (
