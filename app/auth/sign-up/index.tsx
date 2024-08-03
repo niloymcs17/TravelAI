@@ -1,16 +1,19 @@
-import { View, Text, StyleSheet, TextInput, Pressable } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { useNavigation, useRouter } from 'expo-router'
-import { FONT } from '@/constants/Font'
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { TextInput } from 'react-native-paper';
+import { useNavigation, useRouter } from 'expo-router';
+import { FONT } from '@/constants/Font';
 import { STYLE_GLOBAL } from '@/constants/Style';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/configs/FirebaseConfig';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SignUp() {
   const navigation = useNavigation();
   const router = useRouter();
+
   useEffect(() => {
-    navigation.setOptions({ headerShown: false })
+    navigation.setOptions({ headerShown: false });
   }, []);
 
   const [email, setEmail] = useState<string>();
@@ -22,8 +25,8 @@ export default function SignUp() {
         .then((userCredential) => {
           // Signed up 
           const user = userCredential.user;
-          console.log(user)
-          router.replace('/myTrip')
+          console.log(user);
+          router.replace('/myTrip');
           // ...
         })
         .catch((error) => {
@@ -31,48 +34,49 @@ export default function SignUp() {
           console.error(error.message);
           // ..
         });
-
-  }
+  };
 
   return (
-    <View style={style.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={STYLE_GLOBAL.headerText}>Create Account</Text>
-      <View>
-        <Text>Email</Text>
-        <TextInput style={style.input}
-          placeholder='email'
-          onChangeText={(value) => {
-            value ? setEmail(value) : "";
-          }}
+      <View style={styles.inputContainer}>
+        <TextInput
+          mode="outlined"
+          label="Email"
+          placeholder="email"
+          value={email}
+          onChangeText={(value) => setEmail(value)}
+          style={styles.input}
         />
       </View>
-      <View>
-        <Text>PassWord</Text>
-        <TextInput style={style.input} placeholder='Password'
-          onChangeText={(value) => {
-            value ? setPass(value) : "";
-          }}
-          secureTextEntry={true}
+      <View style={styles.inputContainer}>
+        <TextInput
+          mode="outlined"
+          label="Password"
+          placeholder="Password"
+          value={pass}
+          onChangeText={(value) => setPass(value)}
+          secureTextEntry
+          style={styles.input}
         />
       </View>
-      <Pressable onPress={ ()=> OnCreateAccount()}  style={STYLE_GLOBAL.button}>
+      <Pressable onPress={OnCreateAccount} style={STYLE_GLOBAL.button}>
         <Text style={STYLE_GLOBAL.btext}>Create Account</Text>
       </Pressable>
-
-    </View>
-  )
+    </SafeAreaView>
+  );
 }
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: 10
+    margin: 10,
+  },
+  inputContainer: {
+    marginVertical: 10,
   },
   input: {
-    padding: 8,
-    borderWidth: 3,
-    borderRadius: 10,
     fontFamily: FONT.REGULAR,
-    fontSize: 25
-  }
+    fontSize: 16,
+  },
 });

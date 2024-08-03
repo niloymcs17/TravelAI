@@ -1,26 +1,25 @@
-// SavedTrips.tsx
-import HotelCard from '@/components/HotelCard';
 import LoadingOverlay from '@/components/LoadingOverlay';
-import PlacePhoto from '@/components/PlacePhoto';
 import { db } from '@/configs/FirebaseConfig';
-import { FONT } from '@/constants/Font';
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet,Image, Text } from 'react-native';
-import { Card, Title, Paragraph, Button } from 'react-native-paper';
-import Timeline from 'react-native-timeline-flatlist';
-
-
-
+import { ScrollView, StyleSheet, Image, Text, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+import PlacePhoto from '@/components/PlacePhoto';
+import { useRouter } from 'expo-router';
+import TripViewCard from '@/components/TripViewCard';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Ionicons from '@expo/vector-icons/Ionicons';
 const SavedTrips = () => {
-
   const [userTrip, setUserTrips] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedTrip, setSelectedTrip] = useState<any|null>();
+  const [showTrip, setShowTrip] = useState(false);
 
   useEffect(() => {
     setLoading(true);
     getTrips();
-  }, [])
+  }, []);
 
   const getTrips = async () => {
     setUserTrips([]);
@@ -28,105 +27,75 @@ const SavedTrips = () => {
     const q = query(collection(db, "niloy_gmail_com")); // use dynamic email
     const queryShnap = await getDocs(q);
     queryShnap.forEach((doc) => {
-      const tripData = doc.data().plan;
+      const tripData = doc.data();
       console.log(doc.id, "=>", tripData);
 
-      if (tripData){
+      if (tripData) {
         setUserTrips(prev => [...prev, tripData]);
       }
     });
     setLoading(false);
   }
 
+  const handlePress = (travelData: any) => {
+    console.warn(travelData)
+    setSelectedTrip(travelData.plan);
+    setShowTrip(true);
+  };
+
+  const handleClose = () => {
+    setShowTrip(false);
+    setSelectedTrip(null);
+  };
+
   return (
     <ScrollView style={styles.container}>
       <LoadingOverlay visible={loading} text="Loading data..." />
-
-      {userTrip && userTrip?.map((travelData, index) => (
-        <View key={index}>
-          <PlacePhoto photo={travelData.placeID} ></PlacePhoto>
-          <Title style={styles.header}>Travel Plan</Title>
-          <Card style={styles.card}>
-            <Card.Title title="Flight Details" />
-            <Card.Content>
-              <Paragraph>Airline: {travelData.flight.details.airline}</Paragraph>
-              <Paragraph>Flight Number: {travelData.flight.details.flightNumber}</Paragraph>
-              <Paragraph>Departure: {`${travelData.flight.details.departureDate} at ${travelData.flight.details.departureTime}`}</Paragraph>
-              <Paragraph>Arrival: {`${travelData.flight.details.arrivalDate} at ${travelData.flight.details.arrivalTime}`}</Paragraph>
-              <Paragraph>Price: {travelData.flight.details.price}</Paragraph>
-              <Button mode="contained" onPress={() => { }}>
-                Book Now
-              </Button>
-            </Card.Content>
-          </Card>
-
-          <Title style={styles.header}>Hotels</Title>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-            {travelData.hotel.options.map((hotel, index) => (
-              <HotelCard key={index} hotel={hotel} />
-            ))}
-          </ScrollView>
-
-          <Title style={styles.header}>Itinerary</Title>
-          {travelData.itinerary.map((day, index) => (
-            <View key={index}>
-              <Title style={styles.dayHeader}>{day.day}</Title>
-              <Timeline
-                data={day.activities.map(activity => ({
-                  time: activity.bestTime.substring(0, 7),
-                  title: activity.placeName,
-                  description: activity.placeDetails,
-                }))}
-                options={{
-                  style: { paddingTop: 20 }, // Adjust this padding to shift the timeline from the top
-                }}
-                separator={true}
-                circleSize={20}
-                circleColor="rgb(45,156,219)"
-                lineColor="rgb(45,156,219)"
-                timeContainerStyle={{ minWidth: 52 }}
-                titleStyle={{
-                  marginTop: -10,
-                  fontFamily: FONT.MEDIUM,
-                }}
-                timeStyle={{
-                  textAlign: 'center',
-                  backgroundColor: '#ff9797',
-                  color: 'white',
-                  padding: 5,
-                  borderRadius: 13,
-                }}
-                descriptionStyle={{ color: 'gray' }}
-                innerCircle="dot"
-              />
-            </View>
-          ))}
-        </View>
+      {!showTrip && userTrip && userTrip.map((travelData, index) => (
+        <TouchableOpacity key={index} style={styles.card} onPress={() => handlePress(travelData)}>
+          <PlacePhoto photo={travelData?.location} />
+          <Text style={styles.location}>{travelData?.destination}</Text>
+        </TouchableOpacity>
       ))}
+
+      {showTrip && selectedTrip && (
+        <SafeAreaView>
+          <TouchableOpacity onPress={handleClose} style={styles.close}>
+          <Ionicons name="close-circle-sharp" size={35} color="black" />
+          </TouchableOpacity>
+          <TripViewCard propData={selectedTrip} />
+        </SafeAreaView>
+      )}
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  close:{
+    alignSelf:"flex-end",
+    color: "red"
+  },
   container: {
     flex: 1,
     backgroundColor: 'white',
     padding: 10,
   },
-  header: {
-    marginVertical: 10,
-    fontSize: 24,
-  },
   card: {
     marginVertical: 10,
+    padding: 10,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  horizontalScroll: {
-    marginVertical: 10,
-  },
-  dayHeader: {
-    fontSize: 20,
+
+  location: {
     marginTop: 10,
-    marginBottom: 5,
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

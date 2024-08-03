@@ -11,7 +11,7 @@ export default function Login() {
             <Image style={style.image} source={require('../assets/images/login.jpg')} />
             <View style={style.textContainer} >
                 <Text style={style.text}>AI Travel Planner  </Text>
-                <Text>I love travelling </Text>
+                <Text >Discover your perfect trip with our AI travel planner. Get personalized recommendations, seamless bookings, and expert local insights. Your dream vacation starts here.</Text>
                 <Pressable onPress={()=> router.push('auth/sign-in')} >
                     <View style={style.button} >
                         <Text style={{fontSize:20, color: Colors.white, textAlign: 'center', fontFamily: FONT.MEDIUM }}>
@@ -20,8 +20,6 @@ export default function Login() {
                     </View>
                 </Pressable>
             </View>
-
-
         </View>
     )
 }
@@ -39,6 +37,7 @@ const style = StyleSheet.create({
         textAlign: "center",
     },
     image: {
+        marginTop:"100%",
         height: 400
     },
     textContainer: {

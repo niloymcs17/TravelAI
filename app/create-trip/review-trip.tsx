@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';  // Adjust the import path according to your project structure
@@ -7,9 +7,9 @@ import { FONT } from '@/constants/Font';
 import Icon from 'react-native-vector-icons/MaterialIcons';  // Ensure you have vector icons installed
 import { useRouter } from 'expo-router';
 import { chatSession } from '@/configs/AiModal';
-import { collection, addDoc, setDoc, doc } from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore";
 import { auth, db } from '@/configs/FirebaseConfig';
-import { travel } from '@/constants/data';
+import LoadingOverlay from '@/components/LoadingOverlay';
 
 const AI_PROMPT = `Generate Travel Plan from {source} to {destination}.
 Travel date - {startDate} to  {endDate}. Traveler details - {travelWith} , total number of person {numberOfPerson} , with a {budget} budget .
@@ -27,9 +27,12 @@ const ReviewTrip = () => {
   } = useSelector((state: RootState) => state.trip);
 
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
 
   const user = auth.currentUser;
   const onStartNewTrip = async () => {
+    setLoading(true);
     const FINAL_PROMPT = AI_PROMPT
       .replace('{destination}', destinationAddress?.name)
       .replace('{source}', "kolkata")
@@ -46,22 +49,30 @@ const ReviewTrip = () => {
     if (sanitizedEmail && tdata) {
       const docId = Date.now().toString();
       try {
-        const docRef = doc(db, sanitizedEmail , docId);
+        const docRef = doc(db, sanitizedEmail, docId);
         await setDoc(docRef, {
-          plan:tdata.travelPlan,
-          destination:destinationAddress?.name,
-          travelerType:selectedTraveler
+          plan: tdata.travelPlan,
+          destination: destinationAddress?.name,
+          travelerType: selectedTraveler,
+          location: destinationAddress?.placeID
         });
         console.log("Document written....");
+        setLoading(false);
+        router.replace("/SavedTrips")
       } catch (e) {
         console.error("Error adding document: ", e);
+        setLoading(false);
+
       }
     }
+    setLoading(false);
 
   };
 
   return (
     <View style={styles.container}>
+      <LoadingOverlay visible={loading} text="Loading data..." />
+
       <Text style={[STYLE_GLOBAL.headerText, styles.headerText]}>Review your trip</Text>
       <Text style={styles.subHeader}>Before generating your trip, please review your selection</Text>
 

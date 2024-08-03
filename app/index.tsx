@@ -1,12 +1,11 @@
 import Login from "@/components/Login";
 import { auth } from "@/configs/FirebaseConfig";
 import { Redirect } from "expo-router";
+import { useEffect } from "react";
 import { Text, View } from "react-native";
 
 
 export default function Index() {
-
-  const  user = auth.currentUser;
 
   return (
     <View
@@ -16,7 +15,7 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      {user || true ? <Redirect href={'/myTrip'}></Redirect>  : <Login></Login>}
+       <Login></Login>
     </View>
   );
 }

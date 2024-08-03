@@ -16,8 +16,8 @@ export const STYLE_GLOBAL = StyleSheet.create({
         margin:8
     },
     btext: {
-        fontSize: 15,
-        fontFamily: FONT.BOLD,
+        fontSize: 18,
+        fontFamily: FONT.MEDIUM,
         textAlign: "center",
         color:Colors.white
     },
