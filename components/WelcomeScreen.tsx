@@ -4,11 +4,11 @@ import { FONT } from '@/constants/Font'
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 
-export default function Login() {
+export default function WelcomeScreen() {
     const router = useRouter();
     return (
         <View style={style.container}>
-            <Image style={style.image} source={require('../assets/images/login.jpg')} />
+            <Image resizeMode="cover" style={style.image} source={require('../assets/images/login.jpg')} />
             <View style={style.textContainer} >
                 <Text style={style.text}>AI Travel Planner  </Text>
                 <Text >Discover your perfect trip with our AI travel planner. Get personalized recommendations, seamless bookings, and expert local insights. Your dream vacation starts here.</Text>
@@ -27,7 +27,6 @@ export default function Login() {
 const style = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "center",
         alignItems: "center",
         width: "100%"
     },
@@ -37,8 +36,9 @@ const style = StyleSheet.create({
         textAlign: "center",
     },
     image: {
-        marginTop:"100%",
-        height: 400
+        height: 400,
+        width:"100%"
+        
     },
     textContainer: {
         backgroundColor: Colors.white,
@@ -47,7 +47,10 @@ const style = StyleSheet.create({
         borderTopRightRadius: 30,
         height: "100%",
         width: "100%",
-        padding: 15
+        padding: 15,
+        flex:1,
+        justifyContent:"space-between"
+        
     },
     button: {
         padding: 15,

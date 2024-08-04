@@ -1,8 +1,5 @@
-import Login from "@/components/Login";
-import { auth } from "@/configs/FirebaseConfig";
-import { Redirect } from "expo-router";
-import { useEffect } from "react";
-import { Text, View } from "react-native";
+import WelcomeScreen from "@/components/WelcomeScreen";
+import { View } from "react-native";
 
 
 export default function Index() {
@@ -15,7 +12,7 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-       <Login></Login>
+       <WelcomeScreen></WelcomeScreen>
     </View>
   );
 }

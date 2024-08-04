@@ -18,7 +18,6 @@ export default function MyTrip() {
     <SafeAreaView style={styles.container}>
       <View style={styles.tripView}>
         <Text style={STYLE_GLOBAL.headerText}>My Trips</Text>
-        <Ionicons name="add-circle" size={30} color="black" />
       </View>
       <View style={styles.planTrip}>
         <FontAwesome6 name="map-location" size={30} color="black" />
@@ -47,7 +46,7 @@ const styles = StyleSheet.create({
   tripView: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
   },
   title: {
     fontSize: 20,

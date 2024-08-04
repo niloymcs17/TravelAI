@@ -1,7 +1,8 @@
+import { MAPAPI } from '@/constants/API';
 import axios from 'axios';
 import base64 from 'base64-js';
 
-const API_KEY = 'AIzaSyAJQsu6pd9FQovj0Hgd7JCp19WL0mq0BUY';
+const API_KEY = MAPAPI ;
 
 export const fetchPlaceDetails = async (placeId) => {
   try {
@@ -29,7 +30,7 @@ export const fetchPlacePhoto = async (photoReference) => {
   try {
     const response = await axios.get('https://maps.googleapis.com/maps/api/place/photo', {
       params: {
-        maxwidth: 400, // or any other desired size
+        maxwidth: 1200, // or any other desired size
         photoreference: photoReference,
         key: API_KEY,
       },

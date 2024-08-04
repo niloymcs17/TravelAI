@@ -7,13 +7,15 @@
  * https://ai.google.dev/gemini-api/docs/get-started/node
  */
 
+import { GEMENI } from "@/constants/API";
+
 const {
     GoogleGenerativeAI,
     HarmCategory,
     HarmBlockThreshold,
   } = require("@google/generative-ai");
   
-  const apiKey = "AIzaSyAYPSJ6_XbMIenoh8T2Sjv32CeBgXdOUsE";
+  const apiKey = GEMENI;
   const genAI = new GoogleGenerativeAI(apiKey);
   
   const model = genAI.getGenerativeModel({

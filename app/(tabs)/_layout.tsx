@@ -27,7 +27,6 @@ export default function TabLayout() {
       })}>
         <Tabs.Screen name="myTrip" />
         <Tabs.Screen name={SCREENS.SAVED_TRIP} />
-        <Tabs.Screen name="profile" />
     </Tabs>
   )
 }

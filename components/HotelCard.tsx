@@ -1,9 +1,10 @@
 // HotelCard.tsx
-import React from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Image, Pressable } from 'react-native';
 import { Card, Text, Button } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Colors } from '@/constants/Colors';
 interface Hotel {
   hotelName: string;
   address: string;
@@ -17,34 +18,49 @@ interface HotelCardProps {
   hotel: Hotel;
 }
 const url = "https://cdn0.weddingwire.in/vendor/1739/3_2/960/jpg/welcomhotel-by-itc-hotels-raja-sansi-guest-accomodation-1_15_361739-162133553426888.jpeg";
-const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => (
-  <Card style={styles.hotelCard}>
-    <Image source={{ uri: url }} style={styles.image} />
-    <Card.Content>
-      <View style={styles.header}>
-        <Text style={styles.hotelName}>{hotel.hotelName}</Text>
-        <Ionicons name="heart-sharp" size={24} color="red" />
-      </View>
-      <View style={styles.locationRow}>
-        <MaterialIcons name="place" size={25} color="red" />
-        <Text style={styles.address}>{hotel.address}</Text>
-      </View>
-      <View style={styles.ratingRow}>
-        <View style={{flex:1,flexDirection:"row" , alignItems:"center"}}>
-          <MaterialIcons name="star" size={25} color="#FFD700" />
-          <Text style={styles.rating}>{hotel.rating}</Text>
+const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
+  const [fab, setFab] = useState<"heart-sharp" | "heart-outline">("heart-outline")
+
+  const handleFab = () => {
+    if (fab == "heart-sharp") {
+      setFab("heart-outline");
+    } else {
+      setFab("heart-sharp");
+    }
+  }
+
+  return (
+    <Card style={styles.hotelCard}>
+      <Image source={{ uri: url }} style={styles.image} />
+      <Card.Content>
+        <View style={styles.header}>
+          <Text style={styles.hotelName}>{hotel?.hotelName}</Text>
+          <Pressable onPress={handleFab}>
+            <Ionicons name={fab} size={24} color={Colors.primary} />
+          </Pressable>
         </View>
-        <Text style={styles.price}>{hotel.price} /night</Text>
-      </View>
-    </Card.Content>
-  </Card>
-);
+        <View style={styles.locationRow}>
+          <MaterialIcons name="place" size={25} color="red" />
+          <Text style={styles.address}>{hotel?.address}</Text>
+        </View>
+        <View style={styles.ratingRow}>
+          <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
+            <MaterialIcons name="star" size={25} color="#FFD700" />
+            <Text style={styles.rating}>{hotel?.rating}</Text>
+          </View>
+          <Text style={styles.price}>{hotel?.price} /night</Text>
+        </View>
+      </Card.Content>
+    </Card>
+  );
+}
 
 const styles = StyleSheet.create({
   hotelCard: {
     margin: 10,
     borderRadius: 10,
     overflow: 'hidden',
+    width:300,
   },
   image: {
     width: '100%',
@@ -54,6 +70,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderTopStartRadius: 20,
   },
   hotelName: {
     fontSize: 18,
@@ -65,7 +82,7 @@ const styles = StyleSheet.create({
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 4,
+    marginVertical: 8,
   },
   address: {
     marginLeft: 4,
@@ -92,7 +109,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginHorizontal:10
+    marginHorizontal: 10
   },
   button: {
     borderRadius: 20,
