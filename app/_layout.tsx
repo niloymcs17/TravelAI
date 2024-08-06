@@ -1,4 +1,3 @@
-import { CreateTripContext } from "@/context/CreateTripContext";
 import store from "@/store/store";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";

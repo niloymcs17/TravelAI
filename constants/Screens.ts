@@ -1,5 +1,4 @@
 export const SCREENS ={
-    PROFILE:"profile",
-    MY_TRIP:"myTrip",
+    Home:"Home",
     SAVED_TRIP:"SavedTrips"
 }

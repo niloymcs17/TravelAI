@@ -28,6 +28,7 @@ interface Activity {
     bookingUrl: string;
     departureTime: string;
     arrivalDate: string;
+    
   }
   
   // Interface for an itinerary day
@@ -49,7 +50,7 @@ interface Activity {
   }
   
   // Main interface for the travel data
-  interface TravelData {
+   interface TravelData {
     plan: Plan;
     travelerType: string;
     destination: string;

@@ -73,12 +73,13 @@ const SavedTrips = () => {
 const styles = StyleSheet.create({
   close:{
     alignSelf:"flex-end",
-    color: "red"
+    color: "red",
   },
   container: {
     flex: 1,
     backgroundColor: 'white',
     padding: 10,
+    paddingBottom:80
   },
   card: {
     marginVertical: 10,

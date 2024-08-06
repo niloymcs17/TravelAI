@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     margin: 5,
+    paddingBottom:80
   },
   planTrip: {
     flex: 1,
