@@ -12,14 +12,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function TripViewCard({ propData }: any) {
   return (
-    <SafeAreaView>
-      <ScrollView >
-        <Title style={styles.header}>Travel Plan</Title>
-
+    <SafeAreaView style={styles.container}>
         <FlightViewCard flight={propData?.flight?.details}></FlightViewCard>
         <Title style={styles.header}>Hotels</Title>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-          {propData?.hotel?.options?.map((hotel, index) => (
+          {propData?.hotel?.options?.map((hotel:HotelOption, index:number) => (
             <HotelCard key={index} hotel={hotel} />
           ))}
         </ScrollView>
@@ -27,7 +24,7 @@ export default function TripViewCard({ propData }: any) {
         <Title style={styles.header}>Itinerary</Title>
         <View>
           <Timeline
-            data={propData.itinerary.map((day, index) => ({
+            data={propData.itinerary.map((day:ItineraryDay, index:number) => ({
               time: day?.day?.substring(0, 5),
               title: day?.day?.substring(4),
               description: "More Details ...",
@@ -41,22 +38,15 @@ export default function TripViewCard({ propData }: any) {
             circleSize={20}
             circleColor="rgb(45,156,219)"
             lineColor="rgb(45,156,219)"
-            timeContainerStyle={{ width: 90 }}
+            timeContainerStyle={{ width: 55 }}
             titleStyle={{
               marginTop: -10,
             }}
-            timeStyle={{
-              textAlign: 'center',
-              backgroundColor: Colors.primary,
-              color: 'white',
-              padding: 5,
-              borderRadius: 13,
-            }}
+            timeStyle={styles.timeLineTime}
             descriptionStyle={{ color: 'gray' }}
             innerCircle="dot"
           />
         </View>
-      </ScrollView>
     </SafeAreaView>
   )
 }
@@ -71,9 +61,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     fontSize: 24,
   },
-  card: {
-    marginVertical: 10,
-  },
+ 
   horizontalScroll: {
     marginVertical: 10,
   },
@@ -83,4 +71,11 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontFamily: FONT.MEDIUM
   },
+  timeLineTime:{
+      textAlign: 'center',
+      backgroundColor: Colors.primary,
+      color: 'white',
+      padding: 5,
+      borderRadius: 13,
+  }
 });

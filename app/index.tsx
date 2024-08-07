@@ -1,4 +1,5 @@
 import WelcomeScreen from "@/components/WelcomeScreen";
+import { Redirect } from "expo-router";
 import { View } from "react-native";
 
 
@@ -12,7 +13,8 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-       <WelcomeScreen></WelcomeScreen>
+       {/* <WelcomeScreen></WelcomeScreen> */}
+       <Redirect href={'/myTrip'}></Redirect>
     </View>
   );
 }

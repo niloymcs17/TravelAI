@@ -39,7 +39,7 @@ export default function SignIn() {
         })
         .catch((error) => {
           const errorCode = error.code;
-          console.log(error.message);
+          alert(error.message);
         });
     }
   };

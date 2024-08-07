@@ -11,7 +11,6 @@ interface Hotel {
   price: string;
   rating: number;
   description: string;
-  image: string;
 }
 
 interface HotelCardProps {

@@ -6,7 +6,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Pressable } from 'react-nativ
 const size = 25;
 
 
-export default function TabBarButton({ isFocused, onPress, onLongPress, label }) {
+export default function TabBarButton({ isFocused, onPress, onLongPress, label }:any) {
     const [iconName, setIconName] = useState<"home" | "map" | "car" | "car-outline" | "map-outline">("home");
 
 

@@ -20,6 +20,12 @@ export default function RootLayout() {
           options={{
             headerShown: false
           }} />
+
+        <Stack.Screen name="TripDetailsScreen"
+          options={{
+            title:"Trip Details "
+          }} />
+
       </Stack>
     </Provider>
   );
