@@ -1,86 +1,68 @@
 import axios from 'axios';
 import base64 from 'base64-js';
 import { MAPAPI } from '@/constants/API';
-import { ref, uploadString, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '@/configs/FirebaseConfig';
+import { db } from '@/configs/FirebaseConfig';
 import { FIRE_REF } from '@/constants/Ref.const';
 import { doc, setDoc } from 'firebase/firestore';
+
 const API_KEY = MAPAPI;
 
 export interface IPhotoMetadata {
-  placeid: string,
-  photoReference: string,
-  directionURL: string,
-  formatted_address: string,
-  downloadURL?:any
+  placeid: string;
+  photoReference: string;
+  directionURL: string;
+  formatted_address: string;
+  downloadURL?: string;
 }
 
 export interface IHotelMetadata {
-  place_id: string,
-  rating: string,
-  photo_reference:string,
-  downloadURL?:any
+  place_id: string;
+  rating: string;
+  photo_reference: string;
+  downloadURL?: string;
 }
 
-export const fetchPlaceDetails = async (placeId:string) => {
+export const fetchPlaceDetails = async (placeId: string): Promise<IPhotoMetadata> => {
   try {
-    const response = await axios.get('https://maps.googleapis.com/maps/api/place/details/json', {
-      params: {
-        place_id: placeId,
-        key: API_KEY,
-      },
+    const { data } = await axios.get('https://maps.googleapis.com/maps/api/place/details/json', {
+      params: { place_id: placeId, key: API_KEY },
     });
-    if (response?.data?.result?.photos && response.data.result.photos.length > 0) {
-      const photoReference = response.data.result.photos[0].photo_reference;
-      let data:IPhotoMetadata = {
-        placeid: placeId,
-        photoReference: photoReference,
-        directionURL: response.data.result.url,
-        formatted_address: response.data.result.formatted_address
-      }
 
-      return data;
-    } else {
+    const photo = data?.result?.photos?.[0];
+    if (!photo) {
       throw new Error('No photos available for this place.');
     }
+
+    return {
+      placeid: placeId,
+      photoReference: photo.photo_reference,
+      directionURL: data.result.url,
+      formatted_address: data.result.formatted_address,
+    };
   } catch (error) {
     console.error('Error fetching place details:', error);
     throw error;
-  } 
+  }
 };
 
-// Function to fetch photo using the photo reference and convert to base64
-export const fetchPlacePhotoByID = async (photoReference: string) => {
+export const fetchPlacePhotoByID = async (photoReference: string): Promise<string> => {
   try {
-    console.log(photoReference)
-    const response = await axios.get('https://maps.googleapis.com/maps/api/place/photo', {
-      params: {
-        maxwidth: 1200, // or any other desired size
-        photoreference: photoReference,
-        key: API_KEY,
-      },
+    const { data } = await axios.get('https://maps.googleapis.com/maps/api/place/photo', {
+      params: { maxwidth: 1200, photoreference: photoReference, key: API_KEY },
       responseType: 'arraybuffer',
     });
 
-    // Convert arraybuffer to base64 string
-    const base64String = base64.fromByteArray(new Uint8Array(response.data));
-    const imageUrl = `data:image/jpeg;base64,${base64String}`;
-    //return base64 string
-    return imageUrl;
+    const base64String = base64.fromByteArray(new Uint8Array(data));
+    return `data:image/jpeg;base64,${base64String}`;
   } catch (error) {
     console.error('Error fetching place photo:', error);
     throw error;
   }
 };
 
-export const savePhotoMetadata = async (data:IPhotoMetadata) => {
+export const savePhotoMetadata = async (data: IPhotoMetadata): Promise<void> => {
   try {
-
-    const docRef = doc(db, FIRE_REF.PLACE_PHOTO_STORAGE, data.placeid);
-    await setDoc(docRef, {
-      ...data
-    });
-
+    await setDoc(doc(db, FIRE_REF.PLACE_PHOTO_STORAGE, data.placeid), data);
     console.log('Photo metadata saved successfully.');
   } catch (error) {
     console.error('Error saving photo metadata:', error);
@@ -88,14 +70,9 @@ export const savePhotoMetadata = async (data:IPhotoMetadata) => {
   }
 };
 
-export const savePhotoMetadataH = async (data:IHotelMetadata) => {
+export const savePhotoMetadataH = async (data: IHotelMetadata): Promise<void> => {
   try {
-
-    const docRef = doc(db, FIRE_REF.HOTEL_PHOTO_STORAGE, data.place_id);
-    await setDoc(docRef, {
-      ...data
-    });
-
+    await setDoc(doc(db, FIRE_REF.HOTEL_PHOTO_STORAGE, data.place_id), data);
     console.log('Photo metadata saved successfully.');
   } catch (error) {
     console.error('Error saving photo metadata:', error);
@@ -103,43 +80,26 @@ export const savePhotoMetadataH = async (data:IHotelMetadata) => {
   }
 };
 
-
-export const placeDetailsBySearch = async (placename, type) => {
+export const placeDetailsBySearch = async (placename: string, type: string): Promise<IHotelMetadata> => {
   try {
-    const response = await axios.get('https://maps.googleapis.com/maps/api/place/textsearch/json', {
-      params: {
-        query: placename,
-        type: type,
-        key: API_KEY,
-      },
+    const { data } = await axios.get('https://maps.googleapis.com/maps/api/place/textsearch/json', {
+      params: { query: placename, type, key: API_KEY },
     });
 
-    const results = response?.data?.results || [];
-
+    const results = data?.results || [];
     if (results.length === 0) {
       throw new Error('No results found for the given query.');
     }
 
-    // Find the item with the highest rating
     const highestRatedPlace = results.reduce((max, place) =>
-      (place.rating > max.rating ? place : max),
-      { rating: 0 } // Initial value with a rating of 0
+      (place.rating > max.rating ? place : max), { rating: 0 }
     );
 
-    // Create an object with the required fields
-    const resultObject = {
+    return {
       place_id: highestRatedPlace.place_id,
       rating: highestRatedPlace.rating,
-      photo_reference: highestRatedPlace.photos?.[0]?.photo_reference || null, // Handle case where photos might be missing
+      photo_reference: highestRatedPlace.photos?.[0]?.photo_reference || '',
     };
-
-    // let data = await fetchPlaceDetails(highestRatedPlace.place_id);
-
-
-    // Place this object at index 0 of an array
-    // console.log("_______________>",{...data,...resultObject})
-    return resultObject;
-
   } catch (error) {
     console.error('Error fetching place details:', error);
     throw error;
