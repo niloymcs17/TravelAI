@@ -45,11 +45,9 @@ const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
       const photo = await placeDetailsBySearch(`${hotel?.hotelName} , ${hotel?.address}`, "hotel")
       // Reference to the document
       const docRef = doc(db, FIRE_REF.HOTEL_PHOTO_STORAGE, photo.place_id);
-      console.warn(photo);
 
       // Fetch the document
       const docSnap = await getDoc(docRef);
-      console.warn("sdas");
 
       if (docSnap.exists()) {
         // Document data
@@ -59,7 +57,7 @@ const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
           setPhotoUrl(data.downloadURL)
         }
       } else {
-          getPhoto(photo);
+        getPhoto(photo);
       }
     } catch (error) {
       console.error('Error fetching document:', error);
@@ -72,11 +70,9 @@ const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
   const getPhoto = async (photo) => {
     try {
       if (photo) {
-        console.warn("4324324");
 
         const url = await fetchPlacePhotoByID(photo?.photo_reference);
         if (url) {
-        console.warn("43asd24324");
 
           photo.downloadURL = url;
           savePhotoMetadataH(photo)
